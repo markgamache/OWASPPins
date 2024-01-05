@@ -56,8 +56,9 @@ namespace Pinning
 
             string jsonOfConfig = JsonSerializer.Serialize(pinConf, new JsonSerializerOptions { WriteIndented = true });
 
+            Console.WriteLine("This is the Config JSON. It can't be signed");
             Console.WriteLine(jsonOfConfig);
-
+            Console.WriteLine("");
 
             //create the signed pinset
             PinPayload[] thePins = new PinPayload[2];
@@ -78,16 +79,25 @@ namespace Pinning
             //string unsignedPinset = JsonSerializer.Serialize(thePins);
             string unsignedPinset = JsonSerializer.Serialize(thePins, new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() }, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
             
+            Console.WriteLine("This is the unsigned Pinset");
+            Console.WriteLine(unsignedPinset);
+            Console.WriteLine("");
+
+
 
             //take the pinsent and sign it with a JWK
             string finalJWS1 = JwsLibrary.CreateJws(unsignedPinset, jwk1);
 
-            //check signed set against config data
+            Console.WriteLine("This is the valid JWS of the Pinset");
+            Console.WriteLine(finalJWS1);
+            Console.WriteLine("");
 
+            //check signed set against config data
             bool passes = verifySignePinset(finalJWS1, jsonOfConfig);
 
             if (passes)
             {
+                Console.WriteLine("The JWS was valid. This is the header and payload");
                 string[] parts = finalJWS1.Split('.');
 
                 if (parts.Length != 3)
@@ -165,7 +175,7 @@ namespace Pinning
 
 
         /// <summary>
-        /// Try all key from the config JSON to see if any signed the signed Pinset
+        /// Try all key from the config JSON to see if any signed the signed Pinset 
         /// </summary>
         /// <param name="pinSetJwt"></param>
         /// <param name="pinConfigJson"></param>
@@ -177,7 +187,6 @@ namespace Pinning
             foreach (Jwk k in pConf.pinset_keys)
             {
                 //turn the JWK back into ecdsa
-
 
                 ECDsa eccK = JwkLibrary.ConvertJwkToECDsa(JsonSerializer.Serialize(k));
 
