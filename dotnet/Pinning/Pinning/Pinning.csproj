@@ -33,12 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CreativeCode.JWK, Version=0.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CreativeCode.JWK.0.6.1\lib\netstandard2.0\CreativeCode.JWK.dll</HintPath>
-    </Reference>
-    <Reference Include="CreativeCode.JWS, Version=0.3.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CreativeCode.JWS.0.3.1\lib\netstandard2.0\CreativeCode.JWS.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -96,6 +90,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cert.cs" />
     <Compile Include="JwkLibrary.cs" />
     <Compile Include="JwsLibrary.cs" />
     <Compile Include="Program.cs" />

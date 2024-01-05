@@ -5,20 +5,27 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 namespace Pinning
 {
     public class JwsLibrary
     {
-        public static string CreateJws(string payload, string privateKey)
+        /// <summary>
+        /// This takes the ECDsa and uses it to create a JWS
+        /// </summary>
+        /// <param name="payload">This is just the JSON payload. The header is added by this method and locked to RS256</param>
+        /// <param name="privateKey">ECDsa where the private key is present</param>
+        /// <returns>the JWS</returns>
+        public static string CreateJws(string payload, ECDsa privateKey)
         {
-            // Create the header
-            var header = new { alg = "RS256", typ = "JWT" };
+            // Create the header. A more robust implementation would look at key size and create the header.
+            var header = new { alg = "RS256", typ = "JSON" };
 
             // Serialize header and payload to JSON
-            var headerJson = JsonSerializer.SerializeToUtf8Bytes(header);
-            var payloadJson = JsonSerializer.SerializeToUtf8Bytes(payload);
+            var headerJson = JsonSerializer.SerializeToUtf8Bytes(header, new JsonSerializerOptions { WriteIndented = false, Converters = { new JsonStringEnumConverter() }, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+            var payloadJson = JsonSerializer.SerializeToUtf8Bytes(payload, new JsonSerializerOptions { WriteIndented = false, Converters = { new JsonStringEnumConverter() }, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
 
             // Base64Url encode the header and payload
             var encodedHeader = Base64UrlEncode(headerJson);
@@ -28,57 +35,13 @@ namespace Pinning
             var headerPayload = $"{encodedHeader}.{encodedPayload}";
 
             // Sign the header and payload
-            var signature = SignData(headerPayload, privateKey);
-
-            // Base64Url encode the signature
-            var encodedSignature = Base64UrlEncode(signature);
+            var signature = SignJws( privateKey, headerPayload);
 
             // Combine encoded header, payload, and signature with dots
-            return $"{headerPayload}.{encodedSignature}";
+            return $"{headerPayload}.{signature}";
         }
 
-        public static bool VerifyJws(string jws, string publicKey)
-        {
-            // Split the JWS into header, payload, and signature
-            var parts = jws.Split('.');
-            if (parts.Length != 3)
-            {
-                return false; // Invalid JWS format
-            }
-
-            var encodedHeader = parts[0];
-            var encodedPayload = parts[1];
-            var encodedSignature = parts[2];
-
-            // Decode the header, payload, and signature
-            var headerJson = Base64UrlDecode(encodedHeader);
-            var payloadJson = Base64UrlDecode(encodedPayload);
-            var signature = Base64UrlDecode(encodedSignature);
-
-            // Verify the signature
-            var headerPayload = $"{encodedHeader}.{encodedPayload}";
-            return VerifyData(headerPayload, signature, publicKey);
-        }
-
-        private static byte[] SignData(string data, string privateKey)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.FromXmlString(privateKey);
-                return rsa.SignData(Encoding.UTF8.GetBytes(data), HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
-        private static bool VerifyData(string data, byte[] signature, string publicKey)
-        {
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                rsa.FromXmlString(publicKey);
-                return rsa.VerifyData(Encoding.UTF8.GetBytes(data), signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
-        private static string Base64UrlEncode(byte[] data)
+        public static string Base64UrlEncode(byte[] data)
         {
             return Convert.ToBase64String(data)
                 .TrimEnd('=')
@@ -86,33 +49,47 @@ namespace Pinning
                 .Replace('/', '_');
         }
 
-        private static byte[] Base64UrlDecode(string base64Url)
+        public static byte[] Base64UrlDecode(string base64Url)
         {
             var padded = base64Url.PadRight(base64Url.Length + (4 - base64Url.Length % 4) % 4, '=');
             return Convert.FromBase64String(padded.Replace('-', '+').Replace('_', '/'));
         }
 
 
-
-        public static string SignJws(ECDsa ecdsa, string payload)
+        /// <summary>
+        /// Signs the JWK header and payload
+        /// </summary>
+        /// <param name="ecdsa"></param>
+        /// <param name="headerAndPayload"></param>
+        /// <returns></returns>
+        private static string SignJws(ECDsa ecdsa, string headerAndPayload)
         {
-            byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
+            byte[] payloadBytes = Encoding.UTF8.GetBytes(headerAndPayload);
             byte[] signature = ecdsa.SignData(payloadBytes, HashAlgorithmName.SHA256);
 
             string encodedSignature = Base64UrlEncode(signature);
 
-            return $"{payload}.{encodedSignature}";
+            return encodedSignature;
         }
 
+
+        /// <summary>
+        /// Splits out the JWS parts and verifies the data, per https://openid.net/specs/draft-jones-json-web-signature-04.html 
+        /// </summary>
+        /// <param name="ecdsa"></param>
+        /// <param name="jws"></param>
+        /// <returns></returns>
         public static bool VerifyJws(ECDsa ecdsa, string jws)
         {
             string[] parts = jws.Split('.');
 
-            if (parts.Length != 2)
+            if (parts.Length != 3)
                 return false;
 
-            string payload = parts[0];
-            string encodedSignature = parts[1];
+            //one should look at parts[0] to make sure the header matches the crypto
+
+            string payload = $"{parts[0]}.{parts[1]}";
+            string encodedSignature = parts[2];
 
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
             byte[] signatureBytes = Base64UrlDecode(encodedSignature);
@@ -120,8 +97,40 @@ namespace Pinning
             return ecdsa.VerifyData(payloadBytes, signatureBytes, HashAlgorithmName.SHA256);
         }
 
+    }
+
+    public class PinPayload
+    {
+        public string domain { get; set; }
+        public string[] key_pins { get; set; }
+        public string last_updated { get; private set; }
 
 
+        public void SetUpdateDate(DateTime when)
+        {
+            long realEpoch = ((DateTimeOffset)when).ToUnixTimeSeconds();
+            last_updated = realEpoch.ToString("d");
+
+        }
+    }
+
+
+    public class PinConfig
+    {
+        public string pinset_url { get; set; }
+
+        public Jwk[] pinset_keys { get; set; }
+
+        public string[] applies_to { get; set; }
+
+        public string last_updated { get; private set; }
+
+        public void SetUpdateDate(DateTime when)
+        {
+            long realEpoch = ((DateTimeOffset)when).ToUnixTimeSeconds();
+            last_updated = realEpoch.ToString("d");
+
+        }
 
     }
 }
