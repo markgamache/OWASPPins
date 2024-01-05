@@ -21,7 +21,7 @@ namespace Pinning
         public static string CreateJws(string payload, ECDsa privateKey)
         {
             // Create the header. A more robust implementation would look at key size and create the header.
-            var header = new { alg = "RS256", typ = "JSON" };
+            var header = new { alg = "ES256", typ = "JSON" };
 
             // Serialize header and payload to JSON
             var headerJson = JsonSerializer.SerializeToUtf8Bytes(header, new JsonSerializerOptions { WriteIndented = false, Converters = { new JsonStringEnumConverter() }, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
