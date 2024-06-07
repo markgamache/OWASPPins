@@ -35,7 +35,7 @@ namespace Pinning
             var headerPayload = $"{encodedHeader}.{encodedPayload}";
 
             // Sign the header and payload
-            var signature = SignJws( privateKey, headerPayload);
+            var signature = SignJws(privateKey, headerPayload);
 
             // Combine encoded header, payload, and signature with dots
             return $"{headerPayload}.{signature}";
@@ -102,9 +102,10 @@ namespace Pinning
     public class PinPayload
     {
         public string domain { get; set; }
-        public string[] key_pins { get; set; }
+        public List<string> key_pinsL = new List<string>();
         public string last_updated { get; private set; }
 
+        public string[] key_pins { get { return key_pinsL.ToArray(); }  }
 
         public void SetUpdateDate(DateTime when)
         {

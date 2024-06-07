@@ -1,0 +1,109 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\pinning\\cert.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|solutionrelative:pinning\\cert.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|c:\\reallyhopethisworks\\owasppins\\dotnet\\pinning\\pinning\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|solutionrelative:pinning\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\pinning\\jwklibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|solutionrelative:pinning\\jwklibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|c:\\reallyhopethisworks\\owasppins\\dotnet\\pinning\\pinning\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|solutionrelative:pinning\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\pinning\\jwslibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3E987143-3080-46A2-92D1-9CB6DA713110}|Pinning\\Pinning.csproj|solutionrelative:pinning\\jwslibrary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AssemblyInfo.cs",
+              "DocumentMoniker": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\Properties\\AssemblyInfo.cs",
+              "RelativeDocumentMoniker": "Pinning\\Properties\\AssemblyInfo.cs",
+              "ToolTip": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\Properties\\AssemblyInfo.cs",
+              "RelativeToolTip": "Pinning\\Properties\\AssemblyInfo.cs",
+              "ViewState": "AQIAABYAAAAAAAAAAAAAABYAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-17T19:01:14.172Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\Program.cs",
+              "RelativeDocumentMoniker": "Pinning\\Program.cs",
+              "ToolTip": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\Program.cs",
+              "RelativeToolTip": "Pinning\\Program.cs",
+              "ViewState": "AQIAAEgAAAAAAAAAAAAAwFEAAAA9AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-01-04T16:30:05.229Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "JwsLibrary.cs",
+              "DocumentMoniker": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\JwsLibrary.cs",
+              "RelativeDocumentMoniker": "Pinning\\JwsLibrary.cs",
+              "ToolTip": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\JwsLibrary.cs",
+              "RelativeToolTip": "Pinning\\JwsLibrary.cs",
+              "ViewState": "AQIAAFIAAAAAAAAAAAAhwGsAAAAUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2023-12-11T17:58:47.578Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "cert.cs",
+              "DocumentMoniker": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\cert.cs",
+              "RelativeDocumentMoniker": "Pinning\\cert.cs",
+              "ToolTip": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\cert.cs",
+              "RelativeToolTip": "Pinning\\cert.cs",
+              "ViewState": "AQIAAPEAAAAAAAAAAAAqwPIAAAAzAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2023-12-11T18:44:09.504Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "JwkLibrary.cs",
+              "DocumentMoniker": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\JwkLibrary.cs",
+              "RelativeDocumentMoniker": "Pinning\\JwkLibrary.cs",
+              "ToolTip": "C:\\reallyHopeThisWorks\\OWASPPins\\dotnet\\Pinning\\Pinning\\JwkLibrary.cs",
+              "RelativeToolTip": "Pinning\\JwkLibrary.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAACAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2023-12-11T17:58:47.024Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

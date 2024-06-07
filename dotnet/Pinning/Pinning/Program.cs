@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 
 
@@ -20,24 +21,24 @@ namespace Pinning
     {
         static void Main(string[] args)
         {
+            //get and read the test certs
+            string[] testCerts = Directory.GetFiles(@"..\..\..\..\..\testcerts");
 
+            X509Certificate3[] testCertsB = new X509Certificate3[testCerts.Length];
 
-            //create test certs to pin
-            X509Certificate2 fooCertA = cert.GenerateSelfSignedCertificateRsa2048("foo.com");
-            Console.WriteLine("foo.com RSA");
-            Console.WriteLine(cert.ExportToPem(fooCertA));
+            List<string> namesForConfUrl = new List<string>();
 
-            X509Certificate2 exampleCertA = cert.GenerateSelfSignedCertificateRsa2048("example.com");
-            Console.WriteLine("example.com RSA");
-            Console.WriteLine(cert.ExportToPem(exampleCertA));
+            short ind = 0;
+            foreach (string testCert in testCerts)
+            {
+                X509Certificate2 thisCert = new X509Certificate2(testCert);
+                string hash = cert.GenerateHPKPHeader(thisCert);
+                Console.WriteLine($"{thisCert.Subject} {hash}");
+                testCertsB[ind] = new X509Certificate3(thisCert);
+                namesForConfUrl.AddRange(testCertsB[ind].dnsSans);
+                ind++;
 
-            X509Certificate2 fooCertB = cert.GenerateSelfSignedCertificateNistP256("foo.com");
-            Console.WriteLine("foo.com ECC");
-            Console.WriteLine(cert.ExportToPem(fooCertB));
-
-            X509Certificate2 exampleCertB = cert.GenerateSelfSignedCertificateNistP256("example.com");
-            Console.WriteLine("example.com ECC");
-            Console.WriteLine(cert.ExportToPem(exampleCertB));
+            }
 
 
 
@@ -50,7 +51,7 @@ namespace Pinning
 
             PinConfig pinConf = new PinConfig();
             pinConf.SetUpdateDate(DateTime.Now);
-            pinConf.applies_to = new string[] { "foo.com", "example.com" };
+            pinConf.applies_to = namesForConfUrl.ToArray();// new string[] { "crt.sh", "community.letsencrypt.org", "letsencrypt.org", "owasp.org" };
             pinConf.pinset_keys = new Jwk[] { jwkS1, jwkS2 };
             pinConf.pinset_url = "https://place.foo.com/pinset.jwk";
 
@@ -61,24 +62,40 @@ namespace Pinning
             Console.WriteLine("");
 
             //create the signed pinset
-            PinPayload[] thePins = new PinPayload[2];
-            PinPayload ppFoo = new PinPayload();
-            PinPayload ppExample = new PinPayload();
-            thePins[0] = ppFoo;
-            thePins[1] = ppExample;
+            List<PinPayload> thePins = new List<PinPayload>();
 
-            ppFoo.SetUpdateDate(DateTime.Now);
-            ppFoo.domain = "foo.com";
-            ppFoo.key_pins = new string[] { cert.GenerateHPKPHeader(fooCertA), cert.GenerateHPKPHeader(fooCertB) };
+            short ppCount = 0;
+            foreach (string certX in namesForConfUrl)
+            {
 
+                PinPayload pinPayload = thePins.Where(x => x.domain == certX).FirstOrDefault();
+                if (pinPayload == null)
+                {
+                    PinPayload pp = new PinPayload();
+                    pp.SetUpdateDate(DateTime.Now);
+                    pp.domain = certX;
+                    //X509Certificate2 c2 = (X509Certificate2)certX;
+                    List<X509Certificate3> certsInPlay = testCertsB.Where(x => x.dnsSans.Contains(certX)).ToList();
 
-            ppExample.SetUpdateDate(DateTime.Now);
-            ppExample.domain = "example.com";
-            ppExample.key_pins = new string[] { cert.GenerateHPKPHeader(exampleCertA), cert.GenerateHPKPHeader(exampleCertB) };
+                    foreach (X509Certificate3 certY in certsInPlay)
+                    {
+                        string thisPin = cert.GenerateHPKPHeader(certY.x509Certificate2);
+                        if (!pp.key_pinsL.Contains(thisPin))
+                        {
+                            pp.key_pinsL.Add(thisPin);
+                        }
+                    }
+
+                    thePins.Add( pp);
+                }
+                
+                ppCount++;
+            }
+
 
             //string unsignedPinset = JsonSerializer.Serialize(thePins);
             string unsignedPinset = JsonSerializer.Serialize(thePins, new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() }, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
-            
+
             Console.WriteLine("This is the unsigned Pinset");
             Console.WriteLine(unsignedPinset);
             Console.WriteLine("");
@@ -201,5 +218,37 @@ namespace Pinning
             return false;
         }
 
+    }
+
+    internal class X509Certificate3
+    {
+        public string[] dnsSans { get; private set; }
+        public X509Certificate2 x509Certificate2 { get; private set; }
+
+        public X509Certificate3(X509Certificate2 certIn)
+        {
+            x509Certificate2 = certIn;
+            List<string> namesForConfUrl = new List<string>();
+
+            foreach (X509Extension extension in certIn.Extensions)
+            {
+                AsnEncodedData asnData = new AsnEncodedData(extension.Oid, extension.RawData);
+                // Subject Alternative Name not guaranteed to be same friendly name across platforms.
+                // Using Oid value here.
+                if (asnData.Oid.Value == "2.5.29.17")
+                {
+                    string decodedData = asnData.Format(false);
+                    string[] parts = decodedData.Split(',');
+                    foreach (string part in parts)
+                    {
+                        string thisPart = part.Split('=')[1].Trim();
+                        namesForConfUrl.Add(thisPart);
+
+                    }
+                }
+            }
+
+            dnsSans = namesForConfUrl.ToArray();
+        }
     }
 }

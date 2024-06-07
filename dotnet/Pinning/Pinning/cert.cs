@@ -385,12 +385,37 @@ namespace Pinning
             //subject
             cursorPos++;
             int subjectLen = bytes[cursorPos];
-            cursorPos += subjectLen + 1;
 
+            if (subjectLen == 0x82)
+            {
+                //long form means the lenthgt is 2 bytes
+                sizeOfSize = 4;
+                subjectLen = BytesToInt(bytes[cursorPos + 2], bytes[cursorPos + 3]);
+            }
+            else if (subjectLen == 0x81)
+            {
+                //this means short from and >126.  we lose a byte callng out short form, but the lenght is single byte still
+                sizeOfSize = 2;
+                subjectLen = bytes[cursorPos + 1];
+            }
+            else
+            {
+                //this means the nextInSeq is actual a single byte representing the lenght 
+                sizeOfSize = 1;
+                subjectLen = bytes[cursorPos];
+            }
+
+            cursorPos = cursorPos + (int)subjectLen + sizeOfSize;
+
+
+            //cursorPos += subjectLen + 1;
+            /* todo see if this fixes mid long sugject
             if (bytes[cursorPos] != 0x30)
             {
                 throw new Exception("not a cert");
             }
+
+            */
 
             //at subject key!  We will need to extract the key teype and key info. 
             int nextInSeq = bytes[cursorPos + 1];
@@ -426,19 +451,21 @@ namespace Pinning
                 subjectKeyInfo[1] = 0x82;
                 subjectKeyInfo[2] = bytes[cursorPos + 2];
                 subjectKeyInfo[3] = bytes[cursorPos + 3];
+                destIndex = 4;
             }
             else if (nextInSeq == 0x81)
             {
                 subjectKeyInfo[0] = bytes[cursorPos];
                 subjectKeyInfo[1] = 0x81;
                 subjectKeyInfo[2] = bytes[cursorPos + 2];
+                destIndex = 3;
 
             }
             else
             {
                 subjectKeyInfo[0] = bytes[cursorPos];
                 subjectKeyInfo[1] = (byte)subjectKeyLen;
-
+                destIndex = 2;
             }
 
 
